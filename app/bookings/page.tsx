@@ -3,8 +3,9 @@ import Header from "../_components/header";
 import { redirect } from "next/navigation";
 import { db } from "../_lib/prisma";
 import BookingItem from "../_components/booking-item";
-import { authOptions } from "../api/auth/[...nextauth]/route";
-import { isFuture, isPast } from "date-fns";
+import { authOptions } from "../_lib/auth";
+
+
 
 const BookingsPage = async () => {
 

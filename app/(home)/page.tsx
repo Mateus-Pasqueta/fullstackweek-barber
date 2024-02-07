@@ -6,26 +6,29 @@ import BookingItem from "../_components/booking-item";
 import BarbershopItem from "./_components/barbershop-item";
 import { db } from "../_lib/prisma";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "../_lib/auth";
+
+
 
 export default async function Home() {
    const session = await getServerSession(authOptions);
 
    const [barbershops, confirmedBookings] = await Promise.all([
       db.barbershop.findMany({}),
-      session.user ? db.booking.findMany({
-         where: {
+        session?.user 
+        ? db.booking.findMany({
+          where: {
              userId: (session.user as any).id,
              date: {
-                 gte: new Date(),
+                gte: new Date(),
              },
-         },
-         include: {
+          },
+          include: {
              service: true,
              barbershop: true,
-         },
-     }) 
-       : Promise.resolve([]),
+          },
+       }) 
+         : Promise.resolve([]),
 
    ]);
    
@@ -34,11 +37,13 @@ export default async function Home() {
          <Header />
 
          <div className="px-5 pt-5">
-         <h2 className="text-xl font-bold">Olá, Mateus!</h2>
+
+         <h2 className="text-xl font-bold">{session?.user ? `Olá, ${session.user.name}!` : "Olá! Vamos agendar um corte hoje?"}</h2>
          <p className="capitalize text-sm">{format(new Date(), "EEEE',' dd 'de' MMMM", {
             locale: ptBR,
          })}</p>
          </div>
+
          <div className="px-5 mt-6">
          <Search />
          </div>
@@ -77,7 +82,4 @@ export default async function Home() {
          </div>
       </div>
    );
-    
-    
-  
 }
