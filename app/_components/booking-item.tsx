@@ -14,6 +14,7 @@ import { cancelBooking } from "../_actions/cancel-booking";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog";
 
 interface BookingItemProps {
     booking: Prisma.BookingGetPayload<{
@@ -37,7 +38,7 @@ const BookingItem = ({ booking }: BookingItemProps) => {
             toast.success("Reserva cancelada com sucesso!");
         } catch (error) {
             console.log(error);
-            
+
         } finally {
             setIsDeleteLoading(false);
         }
@@ -130,11 +131,31 @@ const BookingItem = ({ booking }: BookingItemProps) => {
 
                     <SheetFooter className="flex-row gap-3 mt-6">
                         <SheetClose asChild>
-                        <Button className="w-full" variant="secondary">Voltar</Button>
+                            <Button className="w-full" variant="secondary">Voltar</Button>
                         </SheetClose>
-                        <Button onClick={handleCancelClick} disabled={!isBookingConfirmed || isDeleteLoading} className="w-full" variant="destructive">{isDeleteLoading && (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />)}
-                        Cancelar Reserva</Button>
+
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button disabled={!isBookingConfirmed || isDeleteLoading} className="w-full" variant="destructive">{isDeleteLoading && (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />)}
+                                    Cancelar Reserva</Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="w-[90%]">
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Cancelar Reserva?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Uma vez cancelada, a reserva não poderá ser recuperada.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter className="flex-row gap-3">
+                                    <AlertDialogCancel className="w-full mt-0">Voltar</AlertDialogCancel>
+                                    <AlertDialogAction disabled={isDeleteLoading} className="w-full" onClick={handleCancelClick}>
+                                        {isDeleteLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        Confirmar</AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+
                     </SheetFooter>
                 </div>
             </SheetContent>
